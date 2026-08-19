@@ -8,7 +8,7 @@ from scanner.models import AntennaPosition, RawObservation, SignalTrend, Spatial
 
 
 class TemporalTracker:
-    def __init__(self, window_sec: float = 20.0, stale_timeout_sec: float = 35.0):
+    def __init__(self, window_sec: float = 12.0, stale_timeout_sec: float = 6.0):
         self.window_sec = window_sec
         self.stale_timeout_sec = stale_timeout_sec
         self.entities: Dict[str, TrackedEntity] = {}

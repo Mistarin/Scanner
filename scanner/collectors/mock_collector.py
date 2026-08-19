@@ -7,7 +7,15 @@ import time
 from datetime import datetime
 from typing import Dict, List, Optional
 from scanner.collectors.base import BaseCollector
-from scanner.models import GeoFix, ModuleHealth, ModuleStatus, RawObservation, SensorType, SpectrumBin
+from scanner.models import (
+    AntennaPosition,
+    GeoFix,
+    ModuleHealth,
+    ModuleStatus,
+    RawObservation,
+    SensorType,
+    SpectrumBin,
+)
 
 
 class MockCollector(BaseCollector):
