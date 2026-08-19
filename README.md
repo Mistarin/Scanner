@@ -10,7 +10,7 @@ Rather than relying on a naive device counter, the system applies a **multi-fact
 - European in-vehicle telematics routers & gateway patterns (Teltonika RUTX, Advantech Conel, Sepura, Škoda Auto)
 - High BLE device density clusters vs stationary commuter traffic dampening
 
-### 🔊 Proximity Audio Beeper
+### Proximity Audio Beeper
 - Emits acoustic Geiger-style pulses when target detection probability is elevated ($\ge 35\%$).
 - **The closer the target (higher RSSI), the faster the beeping**:
   - Distance $\approx -80\text{ dBm} \to$ Slow pulse (every $\sim 1.6\text{s}$)
