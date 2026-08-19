@@ -35,8 +35,10 @@ class TemporalTracker:
                 )
                 if obs.antenna_pos == AntennaPosition.FRONT:
                     new_entity.front_rssi = obs.rssi_dbm
+                    new_entity.front_last_seen = now_ts
                 elif obs.antenna_pos == AntennaPosition.REAR:
                     new_entity.rear_rssi = obs.rssi_dbm
+                    new_entity.rear_last_seen = now_ts
                 self.entities[entity_id] = new_entity
             else:
                 entity = self.entities[entity_id]
@@ -51,8 +53,10 @@ class TemporalTracker:
 
                 if obs.antenna_pos == AntennaPosition.FRONT:
                     entity.front_rssi = obs.rssi_dbm
+                    entity.front_last_seen = now_ts
                 elif obs.antenna_pos == AntennaPosition.REAR:
                     entity.rear_rssi = obs.rssi_dbm
+                    entity.rear_last_seen = now_ts
 
                 entity.rssi_history.append((now_ts, obs.rssi_dbm))
 
@@ -102,7 +106,13 @@ class TemporalTracker:
             std_dev = math.sqrt(var)
             entity.rssi_variance = round(std_dev, 2)
 
-            # 3. Spatial Bearing Calculation (Differential Front - Rear RSSI)
+            # 3. Decay stale antenna readings (> 3.0s without an observation on that antenna)
+            if (now_ts - entity.front_last_seen) > 3.0:
+                entity.front_rssi = -100.0
+            if (now_ts - entity.rear_last_seen) > 3.0:
+                entity.rear_rssi = -100.0
+
+            # 4. Spatial Bearing Calculation (Differential Front - Rear RSSI)
             if entity.front_rssi > -95.0 and entity.rear_rssi > -95.0:
                 entity.delta_rssi = round(entity.front_rssi - entity.rear_rssi, 1)
                 if entity.delta_rssi >= 4.0:

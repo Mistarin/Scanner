@@ -93,6 +93,8 @@ class TrackedEntity:
     peak_rssi: float = -100.0
     front_rssi: float = -100.0
     rear_rssi: float = -100.0
+    front_last_seen: float = 0.0
+    rear_last_seen: float = 0.0
     delta_rssi: float = 0.0        # (front_rssi - rear_rssi) in dB
     bearing: SpatialBearing = SpatialBearing.OMNI
     rssi_slope: float = 0.0        # dRSSI/dt in dB/sec

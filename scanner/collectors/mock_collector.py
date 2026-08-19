@@ -93,7 +93,7 @@ class MockCollector(BaseCollector):
                     progress = (phase_time - 8.0) / 10.0  # 0.0 to 1.0
                     target_rssi = -82.0 + (progress * 40.0) + random.uniform(-1.0, 1.0)
                     rear_rssi = target_rssi
-                    front_rssi = target_rssi - 6.5  # Rear antenna is significantly stronger
+                    front_rssi = target_rssi - 8.0  # Rear antenna is significantly stronger
 
                     obs_list.append(RawObservation(
                         sensor=SensorType.BLUETOOTH,
@@ -123,10 +123,29 @@ class MockCollector(BaseCollector):
                         vendor="Sepura PLC"
                     ))
                     obs_list.append(RawObservation(
+                        sensor=SensorType.BLUETOOTH,
+                        identifier="74:A3:4A:91:BB:02",
+                        rssi_dbm=front_rssi - 2.0,
+                        antenna_pos=AntennaPosition.FRONT,
+                        name_or_ssid="Sepura_SC20_TETRA",
+                        channel_or_freq="2.4GHz BLE",
+                        vendor="Sepura PLC"
+                    ))
+                    obs_list.append(RawObservation(
                         sensor=SensorType.WIFI,
                         identifier="DC:53:7C:12:88:FF",
                         rssi_dbm=rear_rssi + 3.0,
                         antenna_pos=AntennaPosition.REAR,
+                        name_or_ssid="Advantech_SmartFlex_AP",
+                        channel_or_freq="5180 MHz (Ch 36)",
+                        vendor="Mobile Hotspot",
+                        is_mobile_hotspot=True
+                    ))
+                    obs_list.append(RawObservation(
+                        sensor=SensorType.WIFI,
+                        identifier="DC:53:7C:12:88:FF",
+                        rssi_dbm=front_rssi + 3.0,
+                        antenna_pos=AntennaPosition.FRONT,
                         name_or_ssid="Advantech_SmartFlex_AP",
                         channel_or_freq="5180 MHz (Ch 36)",
                         vendor="Mobile Hotspot",
@@ -138,8 +157,18 @@ class MockCollector(BaseCollector):
                         obs_list.append(RawObservation(
                             sensor=SensorType.BLUETOOTH,
                             identifier=f"E4:5F:01:88:22:{i:02X}",
-                            rssi_dbm=target_rssi - 4.0 + random.uniform(-1.5, 1.5),
+                            rssi_dbm=rear_rssi - 4.0 + random.uniform(-1.5, 1.5),
                             antenna_pos=AntennaPosition.REAR,
+                            name_or_ssid=f"BLE_Peripheral_{i}",
+                            channel_or_freq="2.4GHz BLE",
+                            vendor="Randomized Address",
+                            is_randomized_mac=True
+                        ))
+                        obs_list.append(RawObservation(
+                            sensor=SensorType.BLUETOOTH,
+                            identifier=f"E4:5F:01:88:22:{i:02X}",
+                            rssi_dbm=front_rssi - 4.0 + random.uniform(-1.5, 1.5),
+                            antenna_pos=AntennaPosition.FRONT,
                             name_or_ssid=f"BLE_Peripheral_{i}",
                             channel_or_freq="2.4GHz BLE",
                             vendor="Randomized Address",
@@ -189,7 +218,7 @@ class MockCollector(BaseCollector):
                     obs_list.append(RawObservation(
                         sensor=SensorType.BLUETOOTH,
                         identifier="74:A3:4A:91:BB:01",
-                        rssi_dbm=target_rssi - 0.5,
+                        rssi_dbm=target_rssi,
                         antenna_pos=AntennaPosition.REAR,
                         name_or_ssid="Teltonika_RUTX11_GW",
                         channel_or_freq="2.4GHz BLE",
@@ -205,10 +234,29 @@ class MockCollector(BaseCollector):
                         vendor="Sepura PLC"
                     ))
                     obs_list.append(RawObservation(
+                        sensor=SensorType.BLUETOOTH,
+                        identifier="74:A3:4A:91:BB:02",
+                        rssi_dbm=target_rssi - 1.5,
+                        antenna_pos=AntennaPosition.REAR,
+                        name_or_ssid="Sepura_SC20_TETRA",
+                        channel_or_freq="2.4GHz BLE",
+                        vendor="Sepura PLC"
+                    ))
+                    obs_list.append(RawObservation(
                         sensor=SensorType.WIFI,
                         identifier="DC:53:7C:12:88:FF",
                         rssi_dbm=target_rssi + 2.0,
                         antenna_pos=AntennaPosition.FRONT,
+                        name_or_ssid="Advantech_SmartFlex_AP",
+                        channel_or_freq="5180 MHz (Ch 36)",
+                        vendor="Mobile Hotspot",
+                        is_mobile_hotspot=True
+                    ))
+                    obs_list.append(RawObservation(
+                        sensor=SensorType.WIFI,
+                        identifier="DC:53:7C:12:88:FF",
+                        rssi_dbm=target_rssi + 2.0,
+                        antenna_pos=AntennaPosition.REAR,
                         name_or_ssid="Advantech_SmartFlex_AP",
                         channel_or_freq="5180 MHz (Ch 36)",
                         vendor="Mobile Hotspot",
@@ -220,6 +268,17 @@ class MockCollector(BaseCollector):
                             sensor=SensorType.BLUETOOTH,
                             identifier=f"E4:5F:01:88:22:{i:02X}",
                             rssi_dbm=target_rssi - 4.0 + random.uniform(-1.5, 1.5),
+                            antenna_pos=AntennaPosition.FRONT,
+                            name_or_ssid=f"BLE_Peripheral_{i}",
+                            channel_or_freq="2.4GHz BLE",
+                            vendor="Randomized Address",
+                            is_randomized_mac=True
+                        ))
+                        obs_list.append(RawObservation(
+                            sensor=SensorType.BLUETOOTH,
+                            identifier=f"E4:5F:01:88:22:{i:02X}",
+                            rssi_dbm=target_rssi - 4.0 + random.uniform(-1.5, 1.5),
+                            antenna_pos=AntennaPosition.REAR,
                             name_or_ssid=f"BLE_Peripheral_{i}",
                             channel_or_freq="2.4GHz BLE",
                             vendor="Randomized Address",
@@ -284,10 +343,29 @@ class MockCollector(BaseCollector):
                         vendor="Sepura PLC"
                     ))
                     obs_list.append(RawObservation(
+                        sensor=SensorType.BLUETOOTH,
+                        identifier="74:A3:4A:91:BB:02",
+                        rssi_dbm=rear_rssi - 2.0,
+                        antenna_pos=AntennaPosition.REAR,
+                        name_or_ssid="Sepura_SC20_TETRA",
+                        channel_or_freq="2.4GHz BLE",
+                        vendor="Sepura PLC"
+                    ))
+                    obs_list.append(RawObservation(
                         sensor=SensorType.WIFI,
                         identifier="DC:53:7C:12:88:FF",
                         rssi_dbm=front_rssi + 2.0,
                         antenna_pos=AntennaPosition.FRONT,
+                        name_or_ssid="Advantech_SmartFlex_AP",
+                        channel_or_freq="5180 MHz (Ch 36)",
+                        vendor="Mobile Hotspot",
+                        is_mobile_hotspot=True
+                    ))
+                    obs_list.append(RawObservation(
+                        sensor=SensorType.WIFI,
+                        identifier="DC:53:7C:12:88:FF",
+                        rssi_dbm=rear_rssi + 2.0,
+                        antenna_pos=AntennaPosition.REAR,
                         name_or_ssid="Advantech_SmartFlex_AP",
                         channel_or_freq="5180 MHz (Ch 36)",
                         vendor="Mobile Hotspot",
@@ -301,6 +379,16 @@ class MockCollector(BaseCollector):
                             identifier=f"E4:5F:01:88:22:{i:02X}",
                             rssi_dbm=front_rssi - 4.0 + random.uniform(-1.5, 1.5),
                             antenna_pos=AntennaPosition.FRONT,
+                            name_or_ssid=f"BLE_Peripheral_{i}",
+                            channel_or_freq="2.4GHz BLE",
+                            vendor="Randomized Address",
+                            is_randomized_mac=True
+                        ))
+                        obs_list.append(RawObservation(
+                            sensor=SensorType.BLUETOOTH,
+                            identifier=f"E4:5F:01:88:22:{i:02X}",
+                            rssi_dbm=rear_rssi - 4.0 + random.uniform(-1.5, 1.5),
+                            antenna_pos=AntennaPosition.REAR,
                             name_or_ssid=f"BLE_Peripheral_{i}",
                             channel_or_freq="2.4GHz BLE",
                             vendor="Randomized Address",
