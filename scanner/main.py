@@ -27,6 +27,7 @@ from scanner.models import (
     SensorType,
     SpectrumBin,
 )
+from scanner.shopping_list import generate_shopping_list
 from scanner.ui.dashboard import TerminalDashboard
 
 
@@ -38,7 +39,7 @@ def parse_args():
 Examples:
   python3 main.py                             # Run with live local hardware & audio beeper
   python3 main.py --mock                      # Run simulator with default patrol scenario
-  python3 main.py --mock --scenario normal_highway
+  python3 main.py --shopping-list             # Audit hardware and generate upgrade shopping list
   python3 main.py --mute                      # Mute audio proximity beeper
   python3 main.py --oneshot                   # Single snapshot diagnostic probe
   python3 main.py --log drive_01.jsonl        # Record drive data for ML calibration
@@ -53,6 +54,7 @@ Examples:
     )
     parser.add_argument("--interval", type=float, default=1.0, help="UI refresh rate in seconds (default: 1.0)")
     parser.add_argument("--oneshot", action="store_true", help="Execute single diagnostic snapshot and exit")
+    parser.add_argument("--shopping-list", action="store_true", help="Audit hardware and print/save upgrade shopping list")
     parser.add_argument("--mute", "--no-audio", action="store_true", help="Mute the proximity audio beeper")
     parser.add_argument("--log", type=str, default=None, help="Path to write JSONL telemetry stream")
     return parser.parse_args()
@@ -84,6 +86,11 @@ def log_telemetry(log_file: str, result: ClassificationResult, geo: GeoFix, obs_
 
 def main():
     args = parse_args()
+
+    if args.shopping_list:
+        generate_shopping_list()
+        return
+
     console = Console()
     dashboard = TerminalDashboard(console)
     tracker = TemporalTracker()
