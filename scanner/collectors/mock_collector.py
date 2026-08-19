@@ -250,14 +250,16 @@ class MockCollector(BaseCollector):
                     ))
 
                 else:
-                    # Phase 4: RECEDING AHEAD (-42 dBm -> -88 dBm, Front is stronger as it pulls ahead)
+                    # Phase 4: OVERTAKING & DISAPPEARING AHEAD (-42 dBm -> -88 dBm, Front antenna dominant)
                     progress = (phase_time - 24.0) / 8.0  # 0.0 to 1.0
-                    target_rssi = -42.0 - (progress * 46.0) + random.uniform(-1.5, 1.5)
+                    target_rssi = -42.0 - (progress * 46.0) + random.uniform(-1.0, 1.0)
+                    front_rssi = target_rssi
+                    rear_rssi = target_rssi - 8.0  # Target is now ahead in front of vehicle
 
                     obs_list.append(RawObservation(
                         sensor=SensorType.BLUETOOTH,
                         identifier="74:A3:4A:91:BB:01",
-                        rssi_dbm=target_rssi,
+                        rssi_dbm=front_rssi,
                         antenna_pos=AntennaPosition.FRONT,
                         name_or_ssid="Teltonika_RUTX11_GW",
                         channel_or_freq="2.4GHz BLE",
@@ -266,7 +268,7 @@ class MockCollector(BaseCollector):
                     obs_list.append(RawObservation(
                         sensor=SensorType.BLUETOOTH,
                         identifier="74:A3:4A:91:BB:01",
-                        rssi_dbm=target_rssi - 8.0,
+                        rssi_dbm=rear_rssi,
                         antenna_pos=AntennaPosition.REAR,
                         name_or_ssid="Teltonika_RUTX11_GW",
                         channel_or_freq="2.4GHz BLE",
@@ -275,16 +277,67 @@ class MockCollector(BaseCollector):
                     obs_list.append(RawObservation(
                         sensor=SensorType.BLUETOOTH,
                         identifier="74:A3:4A:91:BB:02",
-                        rssi_dbm=target_rssi - 2.0,
+                        rssi_dbm=front_rssi - 2.0,
                         antenna_pos=AntennaPosition.FRONT,
                         name_or_ssid="Sepura_SC20_TETRA",
                         channel_or_freq="2.4GHz BLE",
                         vendor="Sepura PLC"
                     ))
+                    obs_list.append(RawObservation(
+                        sensor=SensorType.WIFI,
+                        identifier="DC:53:7C:12:88:FF",
+                        rssi_dbm=front_rssi + 2.0,
+                        antenna_pos=AntennaPosition.FRONT,
+                        name_or_ssid="Advantech_SmartFlex_AP",
+                        channel_or_freq="5180 MHz (Ch 36)",
+                        vendor="Mobile Hotspot",
+                        is_mobile_hotspot=True
+                    ))
 
-                    # Fade RF carrier
-                    if phase_time > 27.0 and 391.250 in self._bins:
-                        del self._bins[391.250]
+                    # Peripherals fading into the distance ahead
+                    for i in range(8):
+                        obs_list.append(RawObservation(
+                            sensor=SensorType.BLUETOOTH,
+                            identifier=f"E4:5F:01:88:22:{i:02X}",
+                            rssi_dbm=front_rssi - 4.0 + random.uniform(-1.5, 1.5),
+                            antenna_pos=AntennaPosition.FRONT,
+                            name_or_ssid=f"BLE_Peripheral_{i}",
+                            channel_or_freq="2.4GHz BLE",
+                            vendor="Randomized Address",
+                            is_randomized_mac=True
+                        ))
+
+                    # Decaying RF carrier as vehicle recedes ahead
+                    carrier_snr = max(0.5, 18.0 - (progress * 18.0))
+                    carrier_pwr = -88.0 + carrier_snr
+                    is_burst = carrier_snr > 8.0
+
+                    if is_burst:
+                        bin_burst = SpectrumBin(
+                            center_freq_mhz=391.250,
+                            bandwidth_khz=25.0,
+                            power_dbm=round(carrier_pwr, 1),
+                            noise_floor_dbm=-88.0,
+                            snr_db=round(carrier_snr, 1),
+                            is_carrier_burst=True,
+                            band_label="TETRA/PEGAS Downlink (EU)"
+                        )
+                        with self._lock:
+                            self._bins[391.250] = bin_burst
+
+                        obs_list.append(RawObservation(
+                            sensor=SensorType.SDR_RF,
+                            identifier="391.250MHz",
+                            rssi_dbm=carrier_pwr,
+                            antenna_pos=AntennaPosition.FRONT,
+                            name_or_ssid=f"TETRA Downlink Burst (+{carrier_snr:.1f}dB SNR)",
+                            channel_or_freq="391.250 MHz",
+                            vendor="PEGAS Base Station Carrier"
+                        ))
+                    else:
+                        with self._lock:
+                            if 391.250 in self._bins:
+                                del self._bins[391.250]
 
             elif self.scenario == "normal_highway":
                 self.current_fix.speed_kmh = 115.0 + random.uniform(-2.0, 2.0)
